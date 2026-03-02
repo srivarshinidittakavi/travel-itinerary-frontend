@@ -117,26 +117,69 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
-    }
+  }
   body {
     @apply bg-background text-foreground;
-    }
+  }
 }
 
+/* ===== FIXED LAYOUT STYLES FOR SIDEBAR & NAVBAR ===== */
 
-/* Fix mobile padding */
+/* Main content adjustment for desktop sidebar */
+@media (min-width: 768px) {
+  .main-content {
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+  }
+  
+  /* When sidebar is collapsed */
+  .sidebar-collapsed .main-content {
+    margin-left: 80px;
+  }
+}
+
+/* Fix z-index layering */
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  width: 100%;
+}
+
+.sidebar {
+  z-index: 30;
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+  .main-content {
+    margin-left: 0 !important;
+  }
+  
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+  }
+  
+  main {
+    padding-top: 4rem; /* Add space for fixed navbar */
+  }
+}
+
+/* Your existing responsive fixes */
 @media (max-width: 640px) {
   .container {
     padding-left: 1rem;
     padding-right: 1rem;
   }
   
-  /* Fix cards on mobile */
   .grid {
     gap: 1rem;
   }
   
-  /* Fix text sizes */
   h1 {
     font-size: 1.875rem !important;
     line-height: 2.25rem !important;
@@ -148,7 +191,6 @@
   }
 }
 
-/* Fix tables on mobile */
 @media (max-width: 768px) {
   .overflow-x-auto {
     -webkit-overflow-scrolling: touch;
@@ -156,13 +198,11 @@
     padding: 0 1rem;
   }
   
-  /* Stack flex items on mobile */
   .flex-col-mobile {
     flex-direction: column;
   }
 }
 
-/* Fix notification dropdown on mobile */
 @media (max-width: 640px) {
   [data-radix-popper-content-wrapper] {
     width: 100% !important;

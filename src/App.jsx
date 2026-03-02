@@ -1,8 +1,8 @@
-
+// App.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
 import AuthProvider from "./context/AuthContext"
 import ThemeProvider from "./context/ThemeContext"
-import { NotificationProvider } from "./context/NotificationContext" // Fixed import path
+import { NotificationProvider } from "./context/NotificationContext"
 import ProtectedRoute from "./components/ProtectedRoute"
 import AdminRoute from "./components/AdminRoute"
 import Sidebar from "./components/Sidebar"
@@ -38,7 +38,7 @@ function App() {
     <Router>
       <AuthProvider>
         <ThemeProvider>
-          <NotificationProvider> {/* Add NotificationProvider here */}
+          <NotificationProvider>
             <div className="min-h-screen bg-white dark:bg-gray-950 text-black dark:text-white transition-colors duration-300 flex">
               {/* Sidebar - only shown for authenticated users */}
               <Routes>
@@ -49,8 +49,8 @@ function App() {
                 } />
               </Routes>
 
-              {/* Main Content */}
-              <div className="flex-1">
+              {/* Main Content - with proper margin for sidebar */}
+              <div className="flex-1 md:ml-[280px] transition-all duration-300">
                 <Navbar />
                 <main className="p-4 md:p-6">
                   <Routes>
@@ -148,7 +148,7 @@ function App() {
                 </main>
               </div>
             </div>
-          </NotificationProvider> {/* Close NotificationProvider */}
+          </NotificationProvider>
         </ThemeProvider>
       </AuthProvider>
     </Router>

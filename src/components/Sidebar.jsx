@@ -72,6 +72,8 @@ export default function Sidebar() {
     const handleResize = () => {
       if (window.innerWidth < 768) {
         setIsCollapsed(true)
+      } else {
+        setIsCollapsed(false)
       }
     }
     handleResize()
@@ -84,21 +86,12 @@ export default function Sidebar() {
   const sidebarVariants = {
     expanded: { width: 280 },
     collapsed: { width: 80 },
-    mobile: { 
-      position: 'fixed',
-      left: 0,
-      top: 0,
-      bottom: 0,
-      width: 280,
-      zIndex: 100
-    }
   }
 
   const NavLink = ({ item, collapsed }) => {
     const isActive = location.pathname === item.path
     const Icon = item.icon
 
-    // Color mapping for icons
     const getIconColor = (color) => {
       const colors = {
         blue: "text-blue-500",
@@ -157,11 +150,11 @@ export default function Sidebar() {
       variants={sidebarVariants}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className="hidden md:block h-screen sticky top-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden"
+      className="hidden md:block h-screen fixed top-0 left-0 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-lg overflow-hidden z-30"
     >
-      <div className="flex flex-col h-full">
+      <div className="flex flex-col h-full pt-16"> {/* Added pt-16 to account for navbar */}
         {/* Logo */}
-        <div className="p-4 border-b border-gray-200 dark:border-gray-800">
+        <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-800">
           <Link to="/" className="flex items-center gap-2">
             <motion.div
               whileHover={{ rotate: 180 }}
@@ -257,7 +250,7 @@ export default function Sidebar() {
         {/* Collapse Toggle */}
         <button
           onClick={() => setIsCollapsed(!isCollapsed)}
-          className="absolute -right-3 top-20 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-shadow"
+          className="absolute -right-3 top-24 w-6 h-6 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full flex items-center justify-center shadow-md hover:shadow-lg transition-shadow"
         >
           {isCollapsed ? (
             <ChevronRight className="w-4 h-4 text-primary" />
@@ -298,7 +291,7 @@ export default function Sidebar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="md:hidden fixed left-0 top-0 bottom-0 w-72 bg-white dark:bg-gray-900 shadow-2xl z-50 overflow-hidden"
             >
-              <div className="flex flex-col h-full">
+              <div className="flex flex-col h-full pt-16"> {/* Added pt-16 for navbar */}
                 {/* Mobile Header */}
                 <div className="p-4 border-b border-gray-200 dark:border-gray-800">
                   <div className="flex items-center justify-between mb-4">
