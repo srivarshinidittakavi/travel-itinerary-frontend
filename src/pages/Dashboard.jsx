@@ -63,26 +63,26 @@ export default function Dashboard() {
         setLoading(false)
         return
       }
-      
+
       try {
         setLoading(true)
-        
+
         // Fetch trips from backend
-        const userTrips = await tripsApi.getUserTrips(user.id)
+        const userTrips = await tripsApi.getUserTrips();
         setBookings(Array.isArray(userTrips) ? userTrips : [])
-        
+
         // Calculate unique countries
         const uniqueCountries = new Set(
           (Array.isArray(userTrips) ? userTrips : [])
             .map(t => t.destination?.split(',')[1]?.trim())
             .filter(Boolean)
         ).size
-        
+
         // Calculate total expenses
         let totalSpent = 0
         if (Array.isArray(userTrips) && userTrips.length > 0) {
           const tripExpenses = await Promise.all(
-            userTrips.map(trip => 
+            userTrips.map(trip =>
               expensesApi.getTripExpenses(trip.id).catch(() => [])
             )
           )
@@ -90,7 +90,7 @@ export default function Dashboard() {
             .flat()
             .reduce((acc, exp) => acc + (parseFloat(exp.amount) || 0), 0)
         }
-        
+
         // Calculate days traveled
         const daysTraveled = (Array.isArray(userTrips) ? userTrips : [])
           .reduce((acc, trip) => {
@@ -102,7 +102,7 @@ export default function Dashboard() {
             }
             return acc
           }, 0)
-        
+
         setStats({
           totalTrips: Array.isArray(userTrips) ? userTrips.length : 0,
           totalSpent,
@@ -384,8 +384,8 @@ export default function Dashboard() {
               <h2 className="text-xl font-semibold mb-4">Recommended for You</h2>
               <div className="space-y-3">
                 {["Bali", "Tokyo", "Santorini"].map((dest) => (
-                  <div 
-                    key={dest} 
+                  <div
+                    key={dest}
                     className="flex items-center justify-between p-2 hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg cursor-pointer"
                     onClick={() => navigate(`/place/${dest.toLowerCase()}`)}
                   >
@@ -400,14 +400,36 @@ export default function Dashboard() {
             </CardContent>
           </Card>
 
-          {/* Quick Tips */}
+
+          {/* Quick Tips*/}
           <Card className="bg-gradient-to-br from-primary/10 to-primary/5">
             <CardContent className="p-6">
-              <h2 className="text-xl font-semibold mb-2">Travel Tip</h2>
-              <p className="text-sm text-gray-600 dark:text-gray-300">
+              <h2 className="text-xl font-semibold mb-2">Travel Tip of the Day</h2>
+              <p className="text-sm text-gray-600 dark:text-gray-300" id="daily-tip">
                 Always carry a portable charger and download offline maps before your trip!
               </p>
-              <Button variant="link" className="mt-2 p-0">More tips →</Button>
+              <Button
+                variant="link"
+                className="mt-2 p-0 h-auto"
+                onClick={() => {
+                  const tips = [
+                    "Always carry a portable charger and download offline maps before your trip!",
+                    "Pack a small first-aid kit with basic medications.",
+                    "Take photos of your passport and important documents as backup.",
+                    "Learn a few basic phrases in the local language.",
+                    "Notify your bank about travel plans to avoid card blocks.",
+                    "Pack a reusable water bottle to save money and reduce plastic.",
+                    "Use incognito mode when booking flights to avoid price hikes.",
+                    "Always have a backup of your itinerary offline.",
+                    "Carry universal plug adapters for international travel.",
+                    "Check visa requirements months before your trip."
+                  ];
+                  const randomTip = tips[Math.floor(Math.random() * tips.length)];
+                  document.getElementById('daily-tip').textContent = randomTip;
+                }}
+              >
+                New Tip →
+              </Button>
             </CardContent>
           </Card>
         </div>

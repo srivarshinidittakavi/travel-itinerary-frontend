@@ -75,34 +75,13 @@ const features = [
   }
 ]
 
-const team = [
-  {
-    name: "Sarah Johnson",
-    role: "Founder & CEO",
-    image: "https://images.unsplash.com/photo-1494790108777-296fd5c5a9e9?w=400",
-    bio: "Passionate traveler with 10+ years in the tourism industry"
-  },
-  {
-    name: "Michael Chen",
-    role: "Lead Developer",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
-    bio: "Full-stack developer specializing in travel tech"
-  },
-  {
-    name: "Emily Rodriguez",
-    role: "UX Designer",
-    image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400",
-    bio: "Creating seamless and beautiful user experiences"
-  }
-]
-
 export default function About() {
   const navigate = useNavigate()
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-primary to-primary/60 text-white py-20">
+      <section className="relative overflow-hidden bg-gradient-to-r from-primary to-primary/60 text-white py-12 sm:py-16 md:py-20 px-4">
         <div className="absolute inset-0 bg-black/20" />
         <div className="container mx-auto px-4 relative z-10">
           <motion.div
@@ -111,80 +90,51 @@ export default function About() {
             transition={{ duration: 0.6 }}
             className="text-center max-w-3xl mx-auto"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold mb-4 sm:mb-6">
               Your Ultimate Travel Companion
             </h1>
-            <p className="text-xl mb-8 text-white/90">
-              We're on a mission to make trip planning effortless, organized, and enjoyable for every traveler.
+            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/90 px-2">
+              Making trip planning effortless, organized, and enjoyable for every traveler.
             </p>
-            <Button 
-              size="lg" 
-              variant="secondary"
-              onClick={() => navigate("/register")}
-            >
-              Start Your Journey
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate("/register")}
+                className="w-full sm:w-auto text-sm sm:text-base"
+              >
+                Start Your Journey
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto text-sm sm:text-base bg-transparent text-white border-2 border-white hover:bg-white/20 font-semibold"
+                onClick={() => navigate("/")}
+              >
+                Explore Destinations
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-3xl font-bold mb-6">Our Story</h2>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                TravelPlanner was born from a simple idea: travel planning shouldn't be stressful. Our founder, Sarah, experienced firsthand the chaos of juggling multiple bookings, documents, and plans during her dream vacation.
-              </p>
-              <p className="text-gray-600 dark:text-gray-300 mb-4">
-                She envisioned a single platform that could bring all travel information together, making it easy to organize, access, and share. That vision became TravelPlanner - your all-in-one travel companion.
-              </p>
-              <p className="text-gray-600 dark:text-gray-300">
-                Today, we help thousands of travelers plan their perfect trips, from weekend getaways to round-the-world adventures.
-              </p>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="relative"
-            >
-              <img
-                src="https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800"
-                alt="Travel planning"
-                className="rounded-2xl shadow-2xl"
-              />
-              <div className="absolute -bottom-6 -left-6 w-24 h-24 bg-primary/20 rounded-full blur-2xl" />
-              <div className="absolute -top-6 -right-6 w-32 h-32 bg-primary/30 rounded-full blur-3xl" />
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
       {/* Features Section */}
-      <section className="py-16 bg-gray-50 dark:bg-gray-800">
+      <section className="py-12 sm:py-16 bg-gray-50 dark:bg-gray-800">
         <div className="container mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
-            <h2 className="text-3xl font-bold mb-4">Everything You Need</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-3 sm:mb-4">Everything You Need</h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto px-4">
               Comprehensive tools to make your travel planning seamless and enjoyable
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6">
             {features.map((feature, index) => {
               const Icon = feature.icon
               return (
@@ -192,16 +142,21 @@ export default function About() {
                   key={index}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  transition={{ duration: 0.5, delay: index * 0.05 }}
                   viewport={{ once: true }}
+                  className="h-full"
                 >
                   <Card className="h-full hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6">
-                      <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4">
-                        <Icon className="w-6 h-6 text-primary" />
+                    <CardContent className="p-4 sm:p-5 md:p-6">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-3 sm:mb-4">
+                        <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                       </div>
-                      <h3 className="text-xl font-semibold mb-2">{feature.title}</h3>
-                      <p className="text-gray-600 dark:text-gray-300">{feature.description}</p>
+                      <h3 className="text-base sm:text-lg md:text-xl font-semibold mb-1.5 sm:mb-2">
+                        {feature.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm md:text-base text-gray-600 dark:text-gray-300">
+                        {feature.description}
+                      </p>
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -210,52 +165,8 @@ export default function About() {
           </div>
         </div>
       </section>
-
-      {/* Team Section */}
-      <section className="py-16 bg-white dark:bg-gray-900">
-        <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mb-12"
-          >
-            <h2 className="text-3xl font-bold mb-4">Meet Our Team</h2>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-              Passionate travelers and tech enthusiasts dedicated to making your journey better
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-8">
-            {team.map((member, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <Card className="overflow-hidden">
-                  <img
-                    src={member.image}
-                    alt={member.name}
-                    className="w-full h-64 object-cover"
-                  />
-                  <CardContent className="p-6 text-center">
-                    <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                    <p className="text-primary mb-3">{member.role}</p>
-                    <p className="text-gray-600 dark:text-gray-300">{member.bio}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="py-16 bg-gradient-to-r from-primary to-primary/60 text-white">
+      {/* CTA Section - FIXED with proper contrast */}
+      <section className="py-12 sm:py-16 bg-gradient-to-r from-primary to-primary/60 text-white">
         <div className="container mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -263,29 +174,34 @@ export default function About() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl font-bold mb-4">Ready to Start Your Journey?</h2>
-            <p className="text-xl mb-8 text-white/90 max-w-2xl mx-auto">
-              Join thousands of travelers who have simplified their trip planning with TravelPlanner
+            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3 sm:mb-4 px-4 text-white">
+              Ready to Start Your Journey?
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl mb-6 sm:mb-8 text-white/90 max-w-2xl mx-auto px-4">
+              Join thousands of travelers who have simplified their trip planning
             </p>
-            <Button 
-              size="lg" 
-              variant="secondary"
-              onClick={() => navigate("/register")}
-              className="mr-4"
-            >
-              Get Started Free
-            </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
-              className="text-white border-white hover:bg-white/20"
-              onClick={() => navigate("/")}
-            >
-              Explore Destinations
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center px-4">
+              <Button
+                size="lg"
+                variant="secondary"
+                onClick={() => navigate("/register")}
+                className="w-full sm:w-auto text-sm sm:text-base bg-white text-primary hover:bg-white/90 font-semibold"
+              >
+                Get Started Free
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                className="w-full sm:w-auto text-sm sm:text-base bg-transparent text-white border-2 border-white hover:bg-white/20 font-semibold"
+                onClick={() => navigate("/")}
+              >
+                Explore Destinations
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
+
     </div>
   )
 }

@@ -122,3 +122,57 @@
     @apply bg-background text-foreground;
     }
 }
+
+
+/* Fix mobile padding */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  /* Fix cards on mobile */
+  .grid {
+    gap: 1rem;
+  }
+  
+  /* Fix text sizes */
+  h1 {
+    font-size: 1.875rem !important;
+    line-height: 2.25rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+    line-height: 2rem !important;
+  }
+}
+
+/* Fix tables on mobile */
+@media (max-width: 768px) {
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    margin: 0 -1rem;
+    padding: 0 1rem;
+  }
+  
+  /* Stack flex items on mobile */
+  .flex-col-mobile {
+    flex-direction: column;
+  }
+}
+
+/* Fix notification dropdown on mobile */
+@media (max-width: 640px) {
+  [data-radix-popper-content-wrapper] {
+    width: 100% !important;
+    left: 0 !important;
+    right: 0 !important;
+    padding: 0 1rem !important;
+  }
+  
+  [data-radix-menu-content] {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}

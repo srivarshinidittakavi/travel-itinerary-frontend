@@ -1,5 +1,6 @@
 // src/services/api.js
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 // Helper function for API calls
 async function apiCall(endpoint, options = {}) {
   const url = `${API_URL}${endpoint}`;
@@ -14,60 +15,65 @@ async function apiCall(endpoint, options = {}) {
   try {
     const response = await fetch(url, { ...options, headers });
     
-    // Check if response is OK
-    if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error(`API endpoint ${endpoint} not found (404). Please check your backend.`);
-      }
-      const text = await response.text();
-      throw new Error(`HTTP ${response.status}: ${text.substring(0, 100)}`);
-    }
-    
-    // Check content type
+    // Try to parse JSON even for error responses
+    let data;
     const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/json')) {
+    if (contentType && contentType.includes('application/json')) {
+      data = await response.json();
+    } else {
       const text = await response.text();
-      throw new Error(`Expected JSON but got HTML. Endpoint ${endpoint} may not exist.`);
+      // Handle HTML error pages
+      if (text.includes('<!DOCTYPE html>')) {
+        throw new Error('Server returned HTML instead of JSON. Backend may be down.');
+      }
+      throw new Error(`Unexpected response: ${text.substring(0, 100)}`);
     }
     
-    return await response.json();
+    if (!response.ok) {
+      throw new Error(data.error || `Request failed with status ${response.status}`);
+    }
+    
+    return data;
   } catch (error) {
     console.error('API Error:', error);
     throw error;
   }
 }
 
-// Mock auth for development (remove when backend is ready)
-const mockAuth = {
+// ==================== AUTH API ====================
+export const authApi = {
   login: async (email, password) => {
-    console.warn('🔶 Using mock authentication - backend not connected');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const data = await apiCall('/auth/login', { 
+      method: 'POST', 
+      body: JSON.stringify({ email, password }) 
+    });
     
-    const mockUser = {
-      id: 1,
-      name: email.includes('admin') ? 'Admin User' : 'John Doe',
-      email: email,
-      role: email.includes('admin') ? 'admin' : 'user',
-      avatar: 'https://github.com/shadcn.png'
-    };
+    // Store token when login successful
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
-    const mockToken = 'mock-token-' + Date.now();
-    return { user: mockUser, token: mockToken };
+    return data;
   },
   
   register: async (userData) => {
-    console.warn('🔶 Using mock authentication - backend not connected');
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const data = await apiCall('/auth/register', { 
+      method: 'POST', 
+      body: JSON.stringify(userData) 
+    });
     
-    const mockUser = {
-      id: Date.now(),
-      ...userData,
-      role: 'user',
-      avatar: 'https://github.com/shadcn.png'
-    };
+    // Store token when registration successful
+    if (data.token) {
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
     
-    const mockToken = 'mock-token-' + Date.now();
-    return { user: mockUser, token: mockToken };
+    return data;
+  },
+  
+  getProfile: async () => {
+    return await apiCall('/auth/profile');
   },
   
   logout: () => {
@@ -76,24 +82,86 @@ const mockAuth = {
   }
 };
 
-// Trips API
+// ==================== TRIPS API ====================
 export const tripsApi = {
-  getUserTrips: (userId) => apiCall(`/trips/${userId}`).catch(() => []),
-  createTrip: (tripData) => apiCall('/trips', { method: 'POST', body: JSON.stringify(tripData) }),
-  updateTrip: (id, tripData) => apiCall(`/trips/${id}`, { method: 'PUT', body: JSON.stringify(tripData) }),
-  deleteTrip: (id) => apiCall(`/trips/${id}`, { method: 'DELETE' }),
+  // Get all trips for the authenticated user (no userId param needed)
+  getUserTrips: () => apiCall('/trips').catch(() => []),
+  
+  // Get single trip by ID
+  getTripById: (id) => apiCall(`/trips/${id}`),
+  
+  // Create a new trip
+  createTrip: (tripData) => apiCall('/trips', { 
+    method: 'POST', 
+    body: JSON.stringify(tripData) 
+  }),
+  
+  // Update a trip
+  updateTrip: (id, tripData) => apiCall(`/trips/${id}`, { 
+    method: 'PUT', 
+    body: JSON.stringify(tripData) 
+  }),
+  
+  // Delete a trip
+  deleteTrip: (id) => apiCall(`/trips/${id}`, { 
+    method: 'DELETE' 
+  }),
 };
 
-// Expenses API
+// ==================== EXPENSES API ====================
 export const expensesApi = {
+  // Get expenses for a specific trip
   getTripExpenses: (tripId) => apiCall(`/expenses/${tripId}`).catch(() => []),
+  
+  // Get single expense by ID
+  getExpenseById: (id) => apiCall(`/expenses/${id}`),
+  
+  // Add an expense to a trip
   addExpense: (expenseData) => apiCall('/expenses', { 
     method: 'POST', 
     body: JSON.stringify(expenseData) 
   }),
+  
+  // Update an expense
+  updateExpense: (id, expenseData) => apiCall(`/expenses/${id}`, { 
+    method: 'PUT', 
+    body: JSON.stringify(expenseData) 
+  }),
+  
+  // Delete an expense
+  deleteExpense: (id) => apiCall(`/expenses/${id}`, { 
+    method: 'DELETE' 
+  }),
 };
 
-// Auth API - use mock for now
-export const authApi = mockAuth;
+export const wishlistApi = {
+  getWishlist: () => {
+    return JSON.parse(localStorage.getItem('wishlist') || '[]');
+  },
+  
+  addToWishlist: (item) => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const updated = [...wishlist, { ...item, id: Date.now() }];
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+    return updated;
+  },
+  
+  removeFromWishlist: (itemId) => {
+    const wishlist = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    const updated = wishlist.filter(item => item.id !== itemId);
+    localStorage.setItem('wishlist', JSON.stringify(updated));
+    return updated;
+  },
+  
+  clearWishlist: () => {
+    localStorage.setItem('wishlist', '[]');
+    return [];
+  }
+};
 
-export default { trips: tripsApi, expenses: expensesApi, auth: authApi };
+export default { 
+  auth: authApi, 
+  trips: tripsApi, 
+  expenses: expensesApi,
+  wishlist: wishlistApi
+};
