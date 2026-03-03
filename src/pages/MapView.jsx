@@ -15,7 +15,9 @@ import {
   Phone,
   Globe,
   Route,
-  LocateFixed
+  LocateFixed,
+  Satellite,
+  Layers
 } from "lucide-react"
 
 // Sample location data
@@ -62,11 +64,29 @@ export default function MapView() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedLocation, setSelectedLocation] = useState(null)
   const [mapStyle, setMapStyle] = useState("standard")
+  const [userLocation, setUserLocation] = useState(null)
 
   const filteredLocations = locations.filter(loc =>
     loc.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     loc.city.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
+  const getUserLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords
+          setUserLocation({ lat: latitude, lng: longitude })
+          alert(`📍 Your location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`)
+        },
+        (error) => {
+          alert(`❌ Error getting location: ${error.message}`)
+        }
+      )
+    } else {
+      alert("❌ Geolocation is not supported by your browser")
+    }
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -97,7 +117,7 @@ export default function MapView() {
           </Card>
 
           {/* Locations List */}
-          <Card className="max-h-[600px] overflow-y-auto">
+          <Card className="max-h-[500px] overflow-y-auto">
             <CardContent className="p-4">
               <h3 className="font-semibold mb-3">Nearby Places</h3>
               <div className="space-y-3">
@@ -141,34 +161,33 @@ export default function MapView() {
           {/* Map Controls */}
           <Card>
             <CardContent className="p-4">
-              <h3 className="font-semibold mb-3">Map Controls</h3>
+              <h3 className="font-semibold mb-3 flex items-center gap-2">
+                <Layers className="w-4 h-4" />
+                Map Controls
+              </h3>
               <div className="space-y-2">
                 <Button 
-                  variant="outline" 
+                  variant={mapStyle === 'standard' ? 'default' : 'outline'}
                   className="w-full justify-start gap-2"
                   onClick={() => setMapStyle('standard')}
                 >
                   <MapPin className="w-4 h-4" />
                   Standard View
+                  {mapStyle === 'standard' && <span className="ml-auto text-xs">✓</span>}
                 </Button>
                 <Button 
-                  variant="outline" 
+                  variant={mapStyle === 'satellite' ? 'default' : 'outline'}
                   className="w-full justify-start gap-2"
                   onClick={() => setMapStyle('satellite')}
                 >
-                  <Globe className="w-4 h-4" />
+                  <Satellite className="w-4 h-4" />
                   Satellite View
+                  {mapStyle === 'satellite' && <span className="ml-auto text-xs">✓</span>}
                 </Button>
                 <Button 
                   variant="outline" 
                   className="w-full justify-start gap-2"
-                  onClick={() => {
-                    if (navigator.geolocation) {
-                      navigator.geolocation.getCurrentPosition((position) => {
-                        alert(`Your location: ${position.coords.latitude}, ${position.coords.longitude}`)
-                      })
-                    }
-                  }}
+                  onClick={getUserLocation}
                 >
                   <LocateFixed className="w-4 h-4" />
                   Find My Location
@@ -180,17 +199,37 @@ export default function MapView() {
 
         {/* Right Panel - Map */}
         <div className="lg:col-span-2">
-          <Card className="h-[600px]">
+          <Card className="h-[600px] overflow-hidden">
             <CardContent className="p-0 h-full relative">
-              {/* Map Placeholder */}
-              <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 rounded-lg overflow-hidden">
-                {/* Simulated Map Grid */}
-                <div className="absolute inset-0" style={{
-                  backgroundImage: 'linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)',
-                  backgroundSize: '50px 50px',
-                  opacity: 0.2
-                }} />
+              {/* Map Display - NOW UPDATES based on mapStyle */}
+              <div className={`absolute inset-0 transition-all duration-500 ${
+                mapStyle === 'satellite' 
+                  ? 'bg-gradient-to-br from-green-900 via-blue-900 to-purple-900' 
+                  : 'bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900'
+              }`}>
                 
+                {/* Grid pattern - only in standard view */}
+                {mapStyle === 'standard' && (
+                  <div 
+                    className="absolute inset-0" 
+                    style={{
+                      backgroundImage: 'linear-gradient(#ccc 1px, transparent 1px), linear-gradient(90deg, #ccc 1px, transparent 1px)',
+                      backgroundSize: '50px 50px',
+                      opacity: 0.2
+                    }} 
+                  />
+                )}
+
+                {/* Satellite "terrain" effect */}
+                {mapStyle === 'satellite' && (
+                  <>
+                    <div className="absolute inset-0 opacity-30" style={{
+                      backgroundImage: 'radial-gradient(circle at 30% 40%, #4ade80 0%, transparent 30%), radial-gradient(circle at 70% 60%, #3b82f6 0%, transparent 40%)'
+                    }} />
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-green-800/30 to-transparent" />
+                  </>
+                )}
+
                 {/* Location Markers */}
                 {filteredLocations.map((location) => (
                   <motion.div
@@ -206,22 +245,42 @@ export default function MapView() {
                     <div className={`relative ${
                       selectedLocation?.id === location.id
                         ? 'text-primary'
-                        : 'text-gray-600'
+                        : mapStyle === 'satellite' ? 'text-white' : 'text-gray-600'
                     }`}>
-                      <MapPin className="w-8 h-8 fill-current" />
-                      <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+                      <MapPin className="w-8 h-8 fill-current drop-shadow-lg" />
+                      <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-white dark:bg-gray-800 px-2 py-1 rounded text-xs shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10">
                         {location.name}
                       </span>
                     </div>
                   </motion.div>
                 ))}
 
+                {/* User Location Marker */}
+                {userLocation && (
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    className="absolute z-20"
+                    style={{
+                      left: `${((userLocation.lng + 180) / 360) * 100}%`,
+                      top: `${((90 - userLocation.lat) / 180) * 100}%`
+                    }}
+                  >
+                    <div className="relative">
+                      <div className="w-6 h-6 bg-blue-500 rounded-full border-4 border-white animate-pulse" />
+                      <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 whitespace-nowrap bg-blue-500 text-white px-2 py-0.5 rounded text-xs shadow-lg">
+                        You are here
+                      </span>
+                    </div>
+                  </motion.div>
+                )}
+
                 {/* Selected Location Details */}
                 {selectedLocation && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="absolute bottom-4 left-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-md"
+                    className="absolute bottom-4 left-4 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-xl p-4 max-w-md z-30"
                   >
                     <div className="flex gap-3">
                       <img
@@ -231,8 +290,8 @@ export default function MapView() {
                       />
                       <div className="flex-1">
                         <h3 className="font-bold">{selectedLocation.name}</h3>
-                        <p className="text-sm text-gray-500">{selectedLocation.description}</p>
-                        <div className="flex items-center gap-2 mt-2">
+                        <p className="text-sm text-gray-500 mb-2">{selectedLocation.description}</p>
+                        <div className="flex items-center gap-2">
                           <Button size="sm" className="gap-1">
                             <Navigation className="w-3 h-3" />
                             Directions
@@ -246,6 +305,11 @@ export default function MapView() {
                     </div>
                   </motion.div>
                 )}
+              </div>
+
+              {/* Map Style Indicator */}
+              <div className="absolute top-4 right-4 bg-white dark:bg-gray-800 px-3 py-1.5 rounded-full shadow-md text-xs font-medium z-10">
+                {mapStyle === 'standard' ? '🗺️ Standard View' : '🛰️ Satellite View'}
               </div>
             </CardContent>
           </Card>
