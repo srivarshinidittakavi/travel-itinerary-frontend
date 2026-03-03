@@ -40,17 +40,8 @@ function App() {
         <ThemeProvider>
           <NotificationProvider>
             <div className="min-h-screen bg-white dark:bg-gray-950 text-black dark:text-white transition-colors duration-300 flex">
-              {/* Sidebar - only shown for authenticated users */}
-              <Routes>
-                <Route path="*" element={
-                  <ProtectedRoute>
-                    <Sidebar />
-                  </ProtectedRoute>
-                } />
-              </Routes>
-
-              {/* Main Content - with proper margin for sidebar */}
-              <div className="flex-1 md:ml-[280px] transition-all duration-300">
+              {/* Main Content */}
+              <div className="flex-1">
                 <Navbar />
                 <main className="p-4 md:p-6">
                   <Routes>
